@@ -27,6 +27,12 @@ class Shoe:
     self.maker = maker
     self.size = size
   
+SEX = (
+  'Муж.',
+  'Жен.',
+  'Уни.'
+)
+  
 class ShoeModel:
   __instance = None
   def __new__(cls, *args, **kwargs):
@@ -34,20 +40,19 @@ class ShoeModel:
       cls.__instance = super().__new__(cls)
     return cls.__instance
   def __init__(self):
-    self.sm = sm()
     self.data = {'shoes':[]}
-    self.sm.load(self.data)
+    sm.load(self.data)
     self.current = None  
   def add(self, sex, type, color, price, maker, size):
     el = Shoe(sex, type, color, price, maker, size)
     self.data['shoes'].append(el)
-    self.sm.save(el)
+    sm.save(el, self.data)
   def sell(self):
     if self.current:
       self.data['shoes'].remove(self.current)
       self.sm.save(self.current)
       self.current = None  
-  def find(self, sex='', type='', color='', price='', maker='', size=''):
+  def find(self, sex='', type='', color='', minPrice=None, maxPrice=None, maker='', size=''):
     for el in self.data['shoes']:
       flags = []
       if sex:
@@ -56,8 +61,10 @@ class ShoeModel:
         flags.append(True) if el.type==type else flags.append(False)
       if color:
         flags.append(True) if el.color==color else flags.append(False)
-      if price:
-        flags.append(True) if el.price==price else flags.append(False)
+      if minPrice:
+        flags.append(True) if el.price>minPrice else flags.append(False)
+      if maxPrice:
+        flags.append(True) if el.price<maxPrice else flags.append(False)
       if maker:
         flags.append(True) if el.maker==maker else flags.append(False)
       if size:
