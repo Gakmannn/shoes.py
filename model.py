@@ -42,17 +42,23 @@ class ShoeModel:
   def __init__(self):
     self.data = {'shoes':[]}
     sm.load(self.data)
-    self.current = None  
   def add(self, sex, type, color, price, maker, size):
     el = Shoe(sex, type, color, price, maker, size)
     self.data['shoes'].append(el)
     sm.save(el, self.data)
-  def sell(self):
-    if self.current:
-      self.data['shoes'].remove(self.current)
-      self.sm.save(self.current)
-      self.current = None  
+  def sell(self, el):
+    self.data['shoes'].remove(el)
+    sm.save(el, self.data) 
+  def edit(self, el, sex, type, color, price, maker, size):
+    el.sex = sex
+    el.type = type
+    el.color = color
+    el.price = price
+    el.maker = maker
+    el.size = size
+    sm.save(el, self.data) 
   def find(self, sex='', type='', color='', minPrice=None, maxPrice=None, maker='', size=''):
+    result = []
     for el in self.data['shoes']:
       flags = []
       if sex:
@@ -70,8 +76,6 @@ class ShoeModel:
       if size:
         flags.append(True) if el.size==size else flags.append(False)
       if all(flags):
-        self.current = el
-      else:
-        self.current = None  
-    return self
+        result.append(el)
+    return result
     
